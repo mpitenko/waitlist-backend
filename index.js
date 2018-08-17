@@ -37,6 +37,61 @@ router.get('/logout', function (req, res) {
   res.end('It Works!');
 });
 
+router.post('/todos/call', function (req, res) {
+  if (!req.isAuthenticated()) {
+    res.status(401);
+    return res.send({err: 'Unauthorized'});
+  }
+
+    console.log('req.body.username:' + req.body.username);
+    console.log('req.body.password:' + req.body.password);
+
+    var l_check_flag = false;
+    /*", username, get_password('"+req.body.username+"','"req.body.password+"') password from passwords pw where pw.username = '"+req.body.username+"'"*/
+
+       db.query("Select check_pass2('"+req.body.username+"', '"+req.body.password+"') permit, get_password('"+req.body.username+"', '"+req.body.password+"') password, get_username('"+req.body.username+"') username")
+        .then(function(results) {
+
+          console.log('--------------------------------check_pass2');
+          console.log(results);
+
+          var response = results[0];
+          var object = response[0];
+          object.permit;
+
+          // if (!permit) {
+          //   return next({
+          //     err: 'Wrong password or user'
+          //   });
+          // }
+
+          /*var user = { username:'admin',
+                       password: 'asd' };
+
+          if (!user) {
+            return next({
+              err: 'User with this name not found'
+            });
+          };
+
+          if (user.password !== password) {
+            return next({
+              err: 'Wrong password'
+            });
+          }
+
+          next(null, user);*/
+
+        })
+        .catch(function(err) {
+          console.log('err', err)
+          next({err: err});
+        });
+
+   res.end('It Works!');
+
+});
+
 router.post('/todos/save', function (req, res) {
   if (!req.isAuthenticated()) {
     res.status(401);
@@ -73,8 +128,8 @@ router.post('/todos/save', function (req, res) {
    });
 
    res.end('It Works!');
-
 });
+
 
 router.get('/todos/fetch', function (req, res) {
    if (!req.isAuthenticated()) {
